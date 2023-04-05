@@ -13,7 +13,7 @@ git push -u origin master
 	- `-a`显示特性分支和远程分支
 2. 创建分支 `git branch [starting-commit]`
 3. 检出分支 `git checkout branchName`
-4. 创建并检出分支 `git branch -b BranchName`
+4. 创建并检出分支 `git checkout -b BranchName`
 5. 删除分支 `git branch -d BranchName`
 
 ### 分支合并
