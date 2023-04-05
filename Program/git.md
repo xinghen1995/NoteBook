@@ -7,7 +7,7 @@ git init
 git remote add origin xxx.git
 git push -u origin master
 ```
-### 分支管理
+### 分支操作
 1. 查看所有分支，支持正则`git show-branch 'bug/*'`
 	- `-r`列举远程分支
 	- `-a`显示特性分支和远程分支
@@ -40,3 +40,8 @@ git bisect log
 2. 工作目录 vs 给定提交: `git diff commit`
 3. 索引变更 vs 给定提交: `git diff --cached commit`
 4. 给定提交 vs 给定提交: `git diff commit commit`
+
+## 更改提交
+1. 更改 工作目录、索引、仓库 `git reset [-soft | -mixed | -hard]`
+2. 会退提交 `git revert commitId`
+3. 在当前工作目录应用指定提交，一般用于验证分支 `git cherry-pick commitId`
