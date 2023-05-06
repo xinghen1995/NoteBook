@@ -30,19 +30,48 @@ GNU编译工具链
 	- 加载动态库接口
 	```c
 	#include <dlfcn.h>
+
 	void* dlopen(const char* filename, int flag);
 	```
 	- 从加载的动态库中获取指定函数
 	```c
 	#include <dlfcn.h>
+
 	void* dlsym(void* handle, char* symbol);
 	```
 	- 关闭动态库，如果没有其他程序使用，则卸载
 	```c
+    #include <dlfcn.h>
+    
     void dlclose(void* handle);
 	```
     - 查看最近一次dlopen、dlsym、dlclose返回的错误
     ```c
     #include <dlfcn.h>
+
     const char* dlerror(void);
     ```
+- 编译参数 `gcc -rdynamic -o prog2r dll.c -ldl`
+#### 7.12 位置无关代码
+- 对于本模块内的函数，可以通过PC相对寻址。但动态库通常时跨模块的
+- 位置无关的代码，即运行时加载共享库代码，而不用修改代码段(本质上是运行时修改了数据段)
+- 模块内有个特性，即代码段和数据段的位置固定。利用这个特性在为每个全局函数生成一个重定位条目，记录函数到GOT的偏移
+- 在运行时，通过修改GOT数组，存放具体函数的地址，来实现调整。
+- 每个外部函数都有自己的PLT数组，每个模块都有自己的GDT数组
+  1. 代码访问到共享库函数，会先调用到它对于应的PLT代码段
+  ```c
+  # PLT[0]: call dynamic linker
+  4005a0: pushq *GDT[1] // 给动态链接器的第一参数，是重定位段的地址 addr of
+  reloc entries
+  4005a6: jumpq *GDT[2] // 跳转到动态链接器 addr of dynamic linker
+  ...
+  # PLT[2]: call addvec()
+  4005c0: jumpq *GDT[4] // addvec在GDT中的条目位置
+  4005c6: pushq $0x1    // addvec在GDT用户函数的索引，0分配给系统启动函数sys
+  startup，该例中addvec是第一个
+  4005cb: jumpq 4005a0 // 跳转到PLT[0]执行
+  ```
+  2. PLT段在第一次调用时, 跳转到GDT条目，此时GDT条目只是简单但跳转回PLT的下一条指令。
+  3. 先跳转到PLT[0]，押入重定位地址段，然后跳转到动态链接器执行
+  4. 动态链接器根据重定位段和PLT传入的索引，计算出运行时函数地址，填入GDT条目。
+- 之后每次执行，直接从GDT条目跳转到函数，不用再定位
