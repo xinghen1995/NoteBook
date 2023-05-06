@@ -45,3 +45,9 @@ git bisect log
 1. 更改 工作目录、索引、仓库 `git reset [-soft | -mixed | -hard]`
 2. 会退提交 `git revert commitId`
 3. 在当前工作目录应用指定提交，一般用于验证分支 `git cherry-pick commitId`
+
+## GitHub链接
+1. 下载git
+2. 创建git账户和邮箱
+3. 创建ssh密钥 `ssh-keygen -t ed25519 -C "youremail@example.com"` 或者 `ssh-keygen -t rsa -b 4096 -C "youremail@expamle.com"`
+4. GitHub账户添加ssh公钥
